@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "audiomotion-analyzer": "^4.5.4",
     "autoprefixer": "^10.4.23",
     "axios": "^1.13.2",
     "postcss": "^8.5.6",
