@@ -1,11 +1,17 @@
 [phases.setup]
 nixPkgs = ['php83', 'php83Packages.composer']
 
-[phases.build]
+[phases.install]
 cmds = ['composer install --no-dev --optimize-autoloader --no-interaction']
+
+[phases.build]
+cmds = []
 
 [phases.deploy]
 cmd = 'php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT'
 
 [variables]
 PHP_VERSION = '8.3'
+
+[start]
+cmd = 'php artisan serve --host=0.0.0.0 --port=$PORT'
