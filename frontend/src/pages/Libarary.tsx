@@ -1,47 +1,24 @@
 import { useState, useEffect } from 'react';
-import MusicView from '../components/MusicView';
 import Navigation from '../components/Navigation';
-
-interface Track {
-    id: string;
-    name: string;
-    artist_name: string;
-    audio: string;
-    image: string;
-    duration: number;
-}
-
-interface Playlist {
-    id: string;
-    name: string;
-    description: string;
-    tracks: Track[];
-    createdAt: string;
-}
+import type ITrack from '../interface/Track';
+import FullscreenPlayerModal from '../components/FullScreenPlayerModel';
 
 export default function Library() {
-    const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
-    const [favorites, setFavorites] = useState<Track[]>([]);
-    const [playlists, setPlaylists] = useState<Playlist[]>([]);
+    const [currentTrack, setCurrentTrack] = useState<ITrack | null>(null);
+    const [favorites, setFavorites] = useState<ITrack[]>([])
     const [activeTab, setActiveTab] = useState<'favorites' | 'playlists'>('favorites');
-    const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
-    const [newPlaylistName, setNewPlaylistName] = useState('');
-    const [newPlaylistDescription, setNewPlaylistDescription] = useState('');
 
     // Load favorites from localStorage
     useEffect(() => {
-        const savedFavorites = localStorage.getItem('favorites');
-        if (savedFavorites) {
-            setFavorites(JSON.parse(savedFavorites));
-        }
+    
+        let savedFavorites: ITrack[] = JSON.parse(localStorage.getItem('favorites') || '[]');
+        setFavorites(savedFavorites);
+        
+    });
+            
+     
 
-        const savedPlaylists = localStorage.getItem('playlists');
-        if (savedPlaylists) {
-            setPlaylists(JSON.parse(savedPlaylists));
-        }
-    }, []);
-
-    const playTrack = (track: Track) => {
+    const playTrack = (track: ITrack) => {
         console.log('Playing:', track.name);
         setCurrentTrack(track);
     };
@@ -56,55 +33,15 @@ export default function Library() {
         localStorage.setItem('favorites', JSON.stringify(updated));
     };
 
-    const createPlaylist = () => {
-        if (!newPlaylistName.trim()) return;
-
-        const newPlaylist: Playlist = {
-            id: Date.now().toString(),
-            name: newPlaylistName,
-            description: newPlaylistDescription,
-            tracks: [],
-            createdAt: new Date().toISOString(),
-        };
-
-        const updated = [...playlists, newPlaylist];
-        setPlaylists(updated);
-        localStorage.setItem('playlists', JSON.stringify(updated));
-
-        // Reset form
-        setNewPlaylistName('');
-        setNewPlaylistDescription('');
-        setShowCreatePlaylist(false);
-    };
-
-    const deletePlaylist = (playlistId: string) => {
-        if (!confirm('Are you sure you want to delete this playlist?')) return;
-
-        const updated = playlists.filter(p => p.id !== playlistId);
-        setPlaylists(updated);
-        localStorage.setItem('playlists', JSON.stringify(updated));
-    };
 
     return (
         <div className="min-h-screen bg-gray-900 text-white">
             <Navigation />
-
+           
             {/* Main Content */}
             <div className="ml-64 p-8">
                 {/* Fullscreen Player Modal */}
-                {currentTrack && (
-                    <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center backdrop-blur-sm">
-                        <button 
-                            onClick={closeVisualizer}
-                            className="absolute top-8 right-8 z-50 text-white text-4xl hover:text-red-500 transition-all hover:scale-110"
-                        >
-                            ✕
-                        </button>
-                        <div className="w-full max-w-6xl px-8">
-                            <MusicView track={currentTrack} />
-                        </div>
-                    </div>
-                )}
+                <FullscreenPlayerModal closeVisualizer={closeVisualizer} currentTrack={currentTrack} />
 
                 {/* Header */}
                 <div className="mb-8">
@@ -146,7 +83,7 @@ export default function Library() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                {favorites.map((track) => (
+                                {favorites.map((track: ITrack) => (
                                     <div
                                         key={track.id}
                                         className={`bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-all group relative ${

@@ -1,15 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-
-interface Track {
-    id: string;
-    name: string;
-    artist_name: string;
-    audio: string;
-    image: string;
-}
+import type ITrack from '../interface/Track';
 
 interface MusicViewProps {
-    track: Track;
+    track: ITrack;
 }
 
 export default function MusicView({ track }: MusicViewProps) {

@@ -1,25 +1,18 @@
 import { useState } from 'react';
-import MusicView from '../components/MusicView';
 import { cliendID } from '../config/api/jamendo';
 import Navigation from '../components/Navigation';
-
+import type ITrack from '../interface/Track';
+import FullscreenPlayerModal from '../components/FullScreenPlayerModel';
 const CLIENT_ID = cliendID;
 const BASE_URL = 'https://api.jamendo.com/v3.0';
 
-interface Track {
-    id: string;
-    name: string;
-    artist_name: string;
-    audio: string;
-    image: string;
-    duration: number;
-}
+
 
 export default function SearchMusicPage() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<Track[]>([]);
+    const [searchResults, setSearchResults] = useState<ITrack[]>([]);
     const [loading, setLoading] = useState(false);
-    const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+    const [currentTrack, setCurrentTrack] = useState<ITrack | null>(null);
     const [hasSearched, setHasSearched] = useState(false);
 
     const searchTracks = async (query: string) => {
@@ -52,7 +45,7 @@ export default function SearchMusicPage() {
         setSearchQuery(e.target.value);
     };
 
-    const playTrack = (track: Track) => {
+    const playTrack = (track: ITrack) => {
         console.log('Playing:', track.name);
         setCurrentTrack(track);
     };
@@ -69,19 +62,7 @@ export default function SearchMusicPage() {
             {/* Main Content */}
             <div className="ml-64 p-8">
                 {/* Fullscreen Player Modal */}
-                {currentTrack && (
-                    <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center backdrop-blur-sm">
-                        <button 
-                            onClick={closeVisualizer}
-                            className="absolute top-8 right-8 z-50 text-white text-4xl hover:text-red-500 transition-all hover:scale-110"
-                        >
-                            ✕
-                        </button>
-                        <div className="w-full max-w-6xl px-8">
-                            <MusicView track={currentTrack} />
-                        </div>
-                    </div>
-                )}
+                <FullscreenPlayerModal closeVisualizer={closeVisualizer} currentTrack={currentTrack} />
 
                 {/* Search Header */}
                 <div className="mb-8">

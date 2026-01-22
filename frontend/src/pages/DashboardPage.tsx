@@ -1,25 +1,18 @@
 import { useState, useEffect } from 'react';
-import MusicView from '../components/MusicView';
+import FullscreenPlayerModal from '../components/FullScreenPlayerModel';
 import { cliendID } from '../config/api/jamendo';
 import Navigation from '../components/Navigation';
-
+import type ITrack from '../interface/Track';
 const CLIENT_ID = cliendID;
 const BASE_URL = 'https://api.jamendo.com/v3.0';
 
-interface Track {
-    id: string;
-    name: string;
-    artist_name: string;
-    audio: string;
-    image: string;
-    duration: number;
-}
+
 
 export default function DashboardPage() {
-    const [popularTracks, setPopularTracks] = useState<Track[]>([]);
-    const [newReleases, setNewReleases] = useState<Track[]>([]);
+    const [popularTracks, setPopularTracks] = useState<ITrack[]>([]);
+    const [newReleases, setNewReleases] = useState<ITrack[]>([]);
     const [loading, setLoading] = useState(true);
-    const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+    const [currentTrack, setCurrentTrack] = useState<ITrack | null>(null);
 
     const loadPopularTracks = async () => {
         const url = `${BASE_URL}/tracks/?client_id=${CLIENT_ID}&format=json&limit=20&order=popularity_total`;
@@ -58,7 +51,7 @@ export default function DashboardPage() {
         loadAllData();
     }, []);
 
-    const playTrack = (track: Track) => {
+    const playTrack = (track: ITrack) => {
         console.log('Playing track:', track.name);
         setCurrentTrack(track);
     };
@@ -86,22 +79,9 @@ export default function DashboardPage() {
                 
             {/* Main Content */}
             <div className="ml-64 p-8">
-                {/* VISUALIZER - Fullscreen Modal */}
-                {currentTrack && (
-                    <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center backdrop-blur-sm">
-                        <button 
-                            onClick={closeVisualizer}
-                            className="absolute top-8 right-8 z-50 text-white text-4xl hover:text-red-500 transition-all hover:scale-110"
-                            aria-label="Close player"
-                        >
-                            ✕
-                        </button>
-                        <div className="w-full max-w-6xl px-8">
-                            <MusicView track={currentTrack} />
-                        </div>
-                    </div>
-                )}
-
+                {/* Fullscreen Player Modal */}
+                <FullscreenPlayerModal closeVisualizer={closeVisualizer} currentTrack={currentTrack} />
+                
                 {/* Popular Tracks Section */}
                 <section className="mb-12">
                     <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
