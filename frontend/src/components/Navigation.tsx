@@ -20,7 +20,9 @@ export default function Navigation(){
                     }}>
                         📚 Your Library
                     </li>
-                    <li className="cursor-pointer hover:text-green-400 transition p-2 rounded hover:bg-gray-800">
+                    <li className="cursor-pointer hover:text-green-400 transition p-2 rounded hover:bg-gray-800" onClick={()=>
+                        window.location.href="/settings"
+                    }>
                         ⚙️ Settings
                     </li>
                 </ul>

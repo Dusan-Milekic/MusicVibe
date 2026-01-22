@@ -3,9 +3,19 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    // User info
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    
+    // Password management
+    Route::put('/user/password', [ProfileController::class, 'updatePassword']);
+    
+    // Account deletion
+    Route::delete('/user', [ProfileController::class, 'destroy']);
+
+});
 
 
 // Poziv: /api/auth/register i /api/auth/login
