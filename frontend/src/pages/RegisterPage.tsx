@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+    Mail, Lock, User, Calendar, FileText, Music, 
+    Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, UserPlus 
+} from 'lucide-react';
 import axios from 'axios';
 import URL from '../config/api/baseURL';
 
@@ -30,17 +35,20 @@ export default function RegisterPage() {
         birth_date: '',
         bio: ''
     });
-
     const [errors, setErrors] = useState<any>({});
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
-        // Očisti error za to polje
+        
+        // Clear error for this field
         if (errors[e.target.name]) {
             setErrors({
                 ...errors,
@@ -77,11 +85,14 @@ export default function RegisterPage() {
         }
     };
 
+    // Success Screen
     if (success) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white flex items-center justify-center px-6">
+            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950/50 to-gray-950 text-white flex items-center justify-center px-4">
                 <div className="max-w-md w-full text-center space-y-6">
-                    <div className="text-6xl">🎉</div>
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-green-600 to-emerald-600 mb-4">
+                        <CheckCircle2 className="w-10 h-10 text-white" />
+                    </div>
                     <h2 className="text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
                         Welcome to MusicVibe!
                     </h2>
@@ -89,10 +100,11 @@ export default function RegisterPage() {
                         Your account has been created successfully.
                     </p>
                     <button 
-                        onClick={() => window.location.href = '/login'}
-                        className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold hover:scale-105 transition-all duration-300"
+                        onClick={() => navigate('/login')}
+                        className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
                     >
-                        Go to Login
+                        <span>Go to Login</span>
+                        <Music className="w-5 h-5" />
                     </button>
                 </div>
             </div>
@@ -100,217 +112,293 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white py-12 px-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950/50 to-gray-950 text-white py-8 sm:py-12 px-4 sm:px-6">
+            {/* Background Effects */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-20 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-1/4 right-20 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="relative z-10 max-w-2xl mx-auto">
-                <div className="relative">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-3xl blur-2xl opacity-40"></div>
+            <div className="relative z-10 max-w-3xl mx-auto">
+                <div className="bg-gradient-to-br from-gray-900/80 to-purple-900/30 backdrop-blur-xl rounded-2xl border border-purple-500/30 shadow-2xl overflow-hidden">
                     
-                    <div className="relative bg-gradient-to-br from-slate-900/90 to-purple-900/50 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-purple-500/30">
-                        <div className="text-center space-y-4 mb-8">
-                            <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                                Create Account
-                            </h1>
-                            <p className="text-gray-400">
-                                Join MusicVibe and start your musical journey
-                            </p>
+                    {/* Header Section */}
+                    <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 px-6 sm:px-10 py-8 text-center border-b border-purple-500/20">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 mb-4">
+                            <UserPlus className="w-8 h-8 text-white" />
                         </div>
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">
+                            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                                Create Account
+                            </span>
+                        </h1>
+                        <p className="text-gray-300">
+                            Join MusicVibe and start your musical journey
+                        </p>
+                    </div>
 
+                    {/* Form Section */}
+                    <div className="px-6 sm:px-10 py-8">
+                        {/* General Error */}
                         {errors.general && (
-                            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300">
-                                {errors.general}
+                            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3">
+                                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                                <p className="text-red-300 text-sm">{errors.general}</p>
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-purple-300 mb-2">
-                                    Email *
-                                </label>
-                                <input
+                            {/* Email & Username */}
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <InputField
+                                    label="Email"
                                     type="email"
-                                    id="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    required
-                                    className={`w-full px-4 py-3 bg-slate-900/80 border-2 ${
-                                        errors.email ? 'border-red-500' : 'border-purple-500/30'
-                                    } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all duration-300`}
+                                    error={errors.email}
+                                    icon={<Mail className="w-5 h-5" />}
                                     placeholder="your.email@example.com"
+                                    required
                                 />
-                                {errors.email && (
-                                    <p className="text-red-400 text-sm mt-1">{errors.email[0]}</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label htmlFor="username" className="block text-sm font-medium text-purple-300 mb-2">
-                                    Username *
-                                </label>
-                                <input
+                                <InputField
+                                    label="Username"
                                     type="text"
-                                    id="username"
                                     name="username"
                                     value={formData.username}
                                     onChange={handleChange}
-                                    required
-                                    className={`w-full px-4 py-3 bg-slate-900/80 border-2 ${
-                                        errors.username ? 'border-red-500' : 'border-purple-500/30'
-                                    } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all duration-300`}
+                                    error={errors.username}
+                                    icon={<User className="w-5 h-5" />}
                                     placeholder="cooluser123"
-                                />
-                                {errors.username && (
-                                    <p className="text-red-400 text-sm mt-1">{errors.username[0]}</p>
-                                )}
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-purple-300 mb-2">
-                                        First Name *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                        className={`w-full px-4 py-3 bg-slate-900/80 border-2 ${
-                                            errors.name ? 'border-red-500' : 'border-purple-500/30'
-                                        } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all duration-300`}
-                                        placeholder="John"
-                                    />
-                                    {errors.name && (
-                                        <p className="text-red-400 text-sm mt-1">{errors.name[0]}</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label htmlFor="last_name" className="block text-sm font-medium text-purple-300 mb-2">
-                                        Last Name *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="last_name"
-                                        name="last_name"
-                                        value={formData.last_name}
-                                        onChange={handleChange}
-                                        required
-                                        className={`w-full px-4 py-3 bg-slate-900/80 border-2 ${
-                                            errors.last_name ? 'border-red-500' : 'border-purple-500/30'
-                                        } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all duration-300`}
-                                        placeholder="Doe"
-                                    />
-                                    {errors.last_name && (
-                                        <p className="text-red-400 text-sm mt-1">{errors.last_name[0]}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="password" className="block text-sm font-medium text-purple-300 mb-2">
-                                        Password *
-                                    </label>
-                                    <input
-                                        type="password"
-                                        id="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
-                                        minLength={8}
-                                        className={`w-full px-4 py-3 bg-slate-900/80 border-2 ${
-                                            errors.password ? 'border-red-500' : 'border-purple-500/30'
-                                        } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all duration-300`}
-                                        placeholder="Min 8 characters"
-                                    />
-                                    {errors.password && (
-                                        <p className="text-red-400 text-sm mt-1">{errors.password[0]}</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label htmlFor="password_confirmation" className="block text-sm font-medium text-purple-300 mb-2">
-                                        Confirm Password *
-                                    </label>
-                                    <input
-                                        type="password"
-                                        id="password_confirmation"
-                                        name="password_confirmation"
-                                        value={formData.password_confirmation}
-                                        onChange={handleChange}
-                                        required
-                                        minLength={8}
-                                        className="w-full px-4 py-3 bg-slate-900/80 border-2 border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all duration-300"
-                                        placeholder="Re-enter password"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label htmlFor="birth_date" className="block text-sm font-medium text-purple-300 mb-2">
-                                    Birth Date *
-                                </label>
-                                <input
-                                    type="date"
-                                    id="birth_date"
-                                    name="birth_date"
-                                    value={formData.birth_date}
-                                    onChange={handleChange}
                                     required
-                                    className={`w-full px-4 py-3 bg-slate-900/80 border-2 ${
-                                        errors.birth_date ? 'border-red-500' : 'border-purple-500/30'
-                                    } rounded-xl text-white focus:outline-none focus:border-purple-500 transition-all duration-300`}
                                 />
-                                {errors.birth_date && (
-                                    <p className="text-red-400 text-sm mt-1">{errors.birth_date[0]}</p>
-                                )}
                             </div>
 
-                            <div>
-                                <label htmlFor="bio" className="block text-sm font-medium text-purple-300 mb-2">
-                                    Bio (Optional)
-                                </label>
-                                <textarea
-                                    id="bio"
-                                    name="bio"
-                                    value={formData.bio}
+                            {/* First & Last Name */}
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <InputField
+                                    label="First Name"
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
                                     onChange={handleChange}
-                                    rows={3}
-                                    className="w-full px-4 py-3 bg-slate-900/80 border-2 border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-all duration-300 resize-none"
-                                    placeholder="Tell us about yourself..."
+                                    error={errors.name}
+                                    icon={<User className="w-5 h-5" />}
+                                    placeholder="John"
+                                    required
+                                />
+                                <InputField
+                                    label="Last Name"
+                                    type="text"
+                                    name="last_name"
+                                    value={formData.last_name}
+                                    onChange={handleChange}
+                                    error={errors.last_name}
+                                    icon={<User className="w-5 h-5" />}
+                                    placeholder="Doe"
+                                    required
                                 />
                             </div>
 
+                            {/* Password & Confirm Password */}
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <PasswordField
+                                    label="Password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    error={errors.password}
+                                    showPassword={showPassword}
+                                    togglePassword={() => setShowPassword(!showPassword)}
+                                    placeholder="Min 8 characters"
+                                    required
+                                />
+                                <PasswordField
+                                    label="Confirm Password"
+                                    name="password_confirmation"
+                                    value={formData.password_confirmation}
+                                    onChange={handleChange}
+                                    showPassword={showConfirmPassword}
+                                    togglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    placeholder="Re-enter password"
+                                    required
+                                />
+                            </div>
+
+                            {/* Birth Date */}
+                            <InputField
+                                label="Birth Date"
+                                type="date"
+                                name="birth_date"
+                                value={formData.birth_date}
+                                onChange={handleChange}
+                                error={errors.birth_date}
+                                icon={<Calendar className="w-5 h-5" />}
+                                required
+                            />
+
+                            {/* Bio */}
+                            <div>
+                                <label htmlFor="bio" className="block text-sm font-medium text-gray-300 mb-2">
+                                    Bio <span className="text-gray-500">(Optional)</span>
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute top-3 left-4 pointer-events-none">
+                                        <FileText className="w-5 h-5 text-gray-400" />
+                                    </div>
+                                    <textarea
+                                        id="bio"
+                                        name="bio"
+                                        value={formData.bio}
+                                        onChange={handleChange}
+                                        rows={3}
+                                        className="w-full pl-12 pr-4 py-3 bg-gray-900/60 border border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 resize-none"
+                                        placeholder="Tell us about yourself..."
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Submit Button */}
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold text-lg transition-all duration-300 ${
+                                className={`w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-all duration-300 ${
                                     loading 
                                         ? 'opacity-50 cursor-not-allowed' 
-                                        : 'hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/50'
+                                        : 'hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/50'
                                 }`}
                             >
-                                {loading ? 'Creating Account...' : 'Create Account'}
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        <span>Creating Account...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <UserPlus className="w-5 h-5" />
+                                        <span>Create Account</span>
+                                    </>
+                                )}
                             </button>
                         </form>
 
-                        <p className="text-center text-gray-400 mt-6">
-                            Already have an account?{' '}
-                            <a href="/login" className="text-purple-400 hover:text-purple-300 font-bold">
-                                Login here
-                            </a>
-                        </p>
+                        {/* Login Link */}
+                        <div className="text-center mt-6">
+                            <p className="text-gray-400 text-sm">
+                                Already have an account?{' '}
+                                <Link 
+                                    to="/login" 
+                                    className="text-purple-400 hover:text-purple-300 font-semibold transition-colors"
+                                >
+                                    Login here
+                                </Link>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    );
+}
+
+// Input Field Component
+interface InputFieldProps {
+    label: string;
+    type: string;
+    name: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    error?: string[];
+    icon?: React.ReactNode;
+    placeholder?: string;
+    required?: boolean;
+}
+
+function InputField({ label, type, name, value, onChange, error, icon, placeholder, required }: InputFieldProps) {
+    return (
+        <div>
+            <label htmlFor={name} className="block text-sm font-medium text-gray-300 mb-2">
+                {label} {required && <span className="text-purple-400">*</span>}
+            </label>
+            <div className="relative">
+                {icon && (
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                        {icon}
+                    </div>
+                )}
+                <input
+                    type={type}
+                    id={name}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    required={required}
+                    className={`w-full ${icon ? 'pl-12' : 'pl-4'} pr-4 py-3 bg-gray-900/60 border ${
+                        error ? 'border-red-500' : 'border-purple-500/30'
+                    } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300`}
+                    placeholder={placeholder}
+                />
+            </div>
+            {error && (
+                <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {error[0]}
+                </p>
+            )}
+        </div>
+    );
+}
+
+// Password Field Component
+interface PasswordFieldProps {
+    label: string;
+    name: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    error?: string[];
+    showPassword: boolean;
+    togglePassword: () => void;
+    placeholder?: string;
+    required?: boolean;
+}
+
+function PasswordField({ label, name, value, onChange, error, showPassword, togglePassword, placeholder, required }: PasswordFieldProps) {
+    return (
+        <div>
+            <label htmlFor={name} className="block text-sm font-medium text-gray-300 mb-2">
+                {label} {required && <span className="text-purple-400">*</span>}
+            </label>
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                    <Lock className="w-5 h-5" />
+                </div>
+                <input
+                    type={showPassword ? 'text' : 'password'}
+                    id={name}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    required={required}
+                    minLength={8}
+                    className={`w-full pl-12 pr-12 py-3 bg-gray-900/60 border ${
+                        error ? 'border-red-500' : 'border-purple-500/30'
+                    } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300`}
+                    placeholder={placeholder}
+                />
+                <button
+                    type="button"
+                    onClick={togglePassword}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white transition-colors"
+                >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+            </div>
+            {error && (
+                <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {error[0]}
+                </p>
+            )}
         </div>
     );
 }
