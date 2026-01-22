@@ -44,7 +44,7 @@ export default function FullscreenPlayerModal({ closeVisualizer, currentTrack }:
         localStorage.setItem('favorites', JSON.stringify(existingFavorites));
     };
 
-    const showTemporaryNotification = (message: string) => {
+    const showTemporaryNotification = (_message: string) => {
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 2000);
     };

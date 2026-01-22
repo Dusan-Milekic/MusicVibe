@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Music, Menu, X, User, Home, Search, CreditCard, Mail } from 'lucide-react';
+import { Music, Menu, X, User, Search, CreditCard, Mail } from 'lucide-react';
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
