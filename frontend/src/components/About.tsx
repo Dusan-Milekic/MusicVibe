@@ -1,5 +1,6 @@
 import { Music, Headphones, Users, Sparkles, TrendingUp, Globe, Play } from 'lucide-react';
-
+import FeatureCard from './FeatureCard';
+import StatCard from './StatCard';
 export default function About() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950/50 to-gray-950 text-white">
@@ -164,43 +165,5 @@ export default function About() {
     );
 }
 
-// Feature Card Component
-interface FeatureCardProps {
-    icon: React.ReactNode;
-    title: string;
-    description: string;
-    gradient: string;
-    borderColor: string;
-}
 
-function FeatureCard({ icon, title, description, gradient, borderColor }: FeatureCardProps) {
-    return (
-        <div className={`group relative bg-gradient-to-br ${gradient} backdrop-blur-sm rounded-xl p-6 border ${borderColor} hover:border-opacity-60 transition-all duration-300 hover:scale-105`}>
-            {/* Icon */}
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-gradient-to-br from-purple-600/50 to-pink-600/50 mb-4 group-hover:scale-110 transition-transform duration-300">
-                {icon}
-            </div>
-            
-            {/* Content */}
-            <h3 className="text-xl font-semibold mb-2 text-white">{title}</h3>
-            <p className="text-gray-400 leading-relaxed text-sm">{description}</p>
-        </div>
-    );
-}
 
-// Stat Card Component
-interface StatCardProps {
-    number: string;
-    label: string;
-}
-
-function StatCard({ number, label }: StatCardProps) {
-    return (
-        <div className="text-center space-y-2">
-            <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                {number}
-            </div>
-            <div className="text-gray-400 font-medium text-sm sm:text-base">{label}</div>
-        </div>
-    );
-}

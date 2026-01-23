@@ -1,6 +1,7 @@
-import { Search, Music, Zap, Target, TrendingUp, Play } from 'lucide-react';
+import { Search, Music, Zap, Target, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
-
+import FeatureCard from './FeatureCard';
+import TrendingCard from './TrendingCard';
 export default function Check() {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -94,18 +95,21 @@ export default function Check() {
                         title="100M+ Songs"
                         description="Access to millions of tracks from every genre and era"
                         gradient="from-purple-600/20 to-pink-600/20"
+                         borderColor="border-purple-500/30"
                     />
                     <FeatureCard
                         icon={<Zap className="w-8 h-8" />}
                         title="Instant Play"
                         description="Lightning-fast streaming with no buffering or delays"
                         gradient="from-pink-600/20 to-purple-600/20"
+                        borderColor="border-purple-500/30"
                     />
                     <FeatureCard
                         icon={<Target className="w-8 h-8" />}
                         title="Smart Search"
                         description="AI-powered search finds exactly what you're looking for"
                         gradient="from-blue-600/20 to-purple-600/20"
+                        borderColor="border-purple-500/30"
                     />
                 </div>
 
@@ -143,50 +147,4 @@ export default function Check() {
     );
 }
 
-// Feature Card Component
-interface FeatureCardProps {
-    icon: React.ReactNode;
-    title: string;
-    description: string;
-    gradient: string;
-}
 
-function FeatureCard({ icon, title, description, gradient }: FeatureCardProps) {
-    return (
-        <div className={`bg-gradient-to-br ${gradient} backdrop-blur-sm rounded-xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:scale-105`}>
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600/50 to-pink-600/50 mb-4">
-                {icon}
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">{description}</p>
-        </div>
-    );
-}
-
-// Trending Card Component
-interface TrendingCardProps {
-    icon: string;
-    title: string;
-    plays: string;
-    color: string;
-}
-
-function TrendingCard({ icon, title, plays, color }: TrendingCardProps) {
-    return (
-        <div className={`group relative bg-gradient-to-br ${color} backdrop-blur-sm rounded-xl p-5 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 cursor-pointer hover:scale-105`}>
-            {/* Play Button Overlay */}
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform duration-300">
-                    <Play className="w-6 h-6 text-white ml-0.5" fill="white" />
-                </div>
-            </div>
-            
-            {/* Content */}
-            <div className="relative">
-                <div className="text-4xl mb-3">{icon}</div>
-                <h4 className="font-semibold text-white mb-1">{title}</h4>
-                <p className="text-sm text-purple-300">{plays} plays</p>
-            </div>
-        </div>
-    );
-}
