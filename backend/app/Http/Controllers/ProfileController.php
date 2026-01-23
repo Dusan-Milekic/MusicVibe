@@ -131,4 +131,5 @@ class ProfileController extends Controller
         'message' => 'Logged out successfully'
     ], 200);
 }
+    
 }

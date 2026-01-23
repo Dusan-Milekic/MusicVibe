@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Laravel\Sanctum\HasApiTokens; 
+use Illuminate\Foundation\Auth\User as Authenticatable; 
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable; 
 
-class Profile extends Model
+class Profile extends Authenticatable
 {
-    use HasApiTokens; 
+    use HasApiTokens, Notifiable;
 
     protected $fillable = [
         'email',
@@ -19,12 +20,21 @@ class Profile extends Model
         'bio',
     ];
 
-
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
     protected $casts = [
         'birth_date' => 'date',
+        'password' => 'hashed', 
     ];
+
+    /**
+     * Relacija sa Library
+     */
+    public function library()
+    {
+        return $this->hasMany(Library::class, 'user_id');
+    }
 }

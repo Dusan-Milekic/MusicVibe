@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import FullscreenPlayerModal from '../components/FullScreenPlayerModel';
 import type ITrack from '../interface/Track';
+import URL from '../config/api/baseURL';
 
 export default function Library() {
     const [currentTrack, setCurrentTrack] = useState<ITrack | null>(null);
@@ -11,10 +12,32 @@ export default function Library() {
     const [activeTab, setActiveTab] = useState<'favorites' | 'playlists'>('favorites');
     const navigate = useNavigate();
 
-    // Load favorites from localStorage
+    // Load favorites from backend
     useEffect(() => {
-        const savedFavorites: ITrack[] = JSON.parse(localStorage.getItem('favorites') || '[]');
-        setFavorites(savedFavorites);
+        const fetchFavorites = async () => {
+            try {
+                const response = await fetch(`${URL}/library`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch favorites');
+                }
+
+                const data = await response.json();
+                console.log(data)
+                const savedFavorites: ITrack[] = data.data;
+                setFavorites(savedFavorites);
+            } catch (error) {
+                console.error('Error fetching favorites:', error);
+            }
+        };
+
+        fetchFavorites();
     }, []);
 
     const playTrack = (track: ITrack) => {
@@ -26,10 +49,34 @@ export default function Library() {
         setCurrentTrack(null);
     };
 
-    const removeFromFavorites = (trackId: string) => {
-        const updated = favorites.filter(t => t.id !== trackId);
-        setFavorites(updated);
-        localStorage.setItem('favorites', JSON.stringify(updated));
+    const removeFromFavorites = async (jamendoTrackId: string) => {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            console.error('User not authenticated');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${URL}/library/${jamendoTrackId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to remove from favorites');
+            }
+
+            // Ukloni iz lokalnog state-a - traži po jamendo_track_id
+            const updated = favorites.filter(t => t.jamendo_track_id !== jamendoTrackId);
+            setFavorites(updated);
+            
+        } catch (error) {
+            console.error('Error removing from favorites:', error);
+        }
     };
 
     return (
@@ -94,9 +141,9 @@ export default function Library() {
                                         <FavoriteTrackCard
                                             key={track.id}
                                             track={track}
-                                            isPlaying={currentTrack?.id === track.id}
+                                            isPlaying={currentTrack?.jamendo_track_id === track.jamendo_track_id}
                                             onPlay={() => playTrack(track)}
-                                            onRemove={() => removeFromFavorites(track.id)}
+                                            onRemove={() => removeFromFavorites(track.jamendo_track_id)}
                                         />
                                     ))}
                                 </div>

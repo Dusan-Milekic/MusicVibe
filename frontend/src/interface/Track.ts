@@ -7,4 +7,5 @@ export default interface ITrack{
     audio: string;
     image: string;
     duration: number;
+    jamendo_track_id:string;
 }

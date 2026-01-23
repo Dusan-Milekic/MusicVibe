@@ -1,4 +1,4 @@
-const cliendID = '34d9009e';
-const secretKey = 'fcbaec2b7777c040cf09b25c9b4bc146';
+const cliendID = import.meta.env.VITE_JAMENDO_CLIENT_ID
+const secretKey = import.meta.env.VITE_JAMENDO_SECRET_KEY
 
 export { cliendID, secretKey };

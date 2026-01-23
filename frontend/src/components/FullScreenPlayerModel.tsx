@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Heart, Check } from 'lucide-react';
 import MusicView from './MusicView';
 import type ITrack from '../interface/Track';
+import URL from '../config/api/baseURL';
 
 interface FullscreenPlayerModalProps {
     closeVisualizer: () => void;
@@ -11,40 +12,129 @@ interface FullscreenPlayerModalProps {
 export default function FullscreenPlayerModal({ closeVisualizer, currentTrack }: FullscreenPlayerModalProps) {
     const [isFavorite, setIsFavorite] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
 
     // Check if track is already in favorites
     useEffect(() => {
         if (!currentTrack) return;
         
-        const existingFavorites: ITrack[] = JSON.parse(localStorage.getItem('favorites') || '[]');
-        const isAlreadyFavorite = existingFavorites.some(track => track.id === currentTrack.id);
-        setIsFavorite(isAlreadyFavorite);
+        const checkIfFavorite = async () => {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                setIsFavorite(false);
+                return;
+            }
+
+            try {
+                // Koristi jamendo_track_id ako postoji (iz library), inače id (iz Jamendo API)
+                const jamendoId = currentTrack.jamendo_track_id || currentTrack.id;
+                
+                const response = await fetch(`${URL}/library/check/${jamendoId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    setIsFavorite(false);
+                    return;
+                }
+
+                const data = await response.json();
+                setIsFavorite(data.isFavorite);
+            } catch (error) {
+                console.error('Error checking favorite status:', error);
+                setIsFavorite(false);
+            }
+        };
+
+        checkIfFavorite();
     }, [currentTrack]);
 
-    const handleAddToFavorites = () => {
+    const handleAddToFavorites = async () => {
         if (!currentTrack) return;
 
-        let existingFavorites: ITrack[] = JSON.parse(localStorage.getItem('favorites') || '[]');
+        const token = localStorage.getItem('token');
         
-        // Check if already in favorites
-        const isAlreadyInFavorites = existingFavorites.some(track => track.id === currentTrack.id);
-        
-        if (isAlreadyInFavorites) {
-            // Remove from favorites
-            existingFavorites = existingFavorites.filter(track => track.id !== currentTrack.id);
-            setIsFavorite(false);
-            showTemporaryNotification('Removed from favorites');
-        } else {
-            // Add to favorites
-            existingFavorites.push(currentTrack);
-            setIsFavorite(true);
-            showTemporaryNotification('Added to favorites');
+        if (!token) {
+            showTemporaryNotification('Please login to add favorites');
+            return;
         }
-        
-        localStorage.setItem('favorites', JSON.stringify(existingFavorites));
+
+        try {
+            // Koristi jamendo_track_id ako postoji, inače id
+            const jamendoId = currentTrack.jamendo_track_id || currentTrack.id;
+
+            if (isFavorite) {
+                // Remove from favorites - DELETE request
+                const response = await fetch(`${URL}/library/${jamendoId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to remove from favorites');
+                }
+
+                setIsFavorite(false);
+                showTemporaryNotification('Removed from favorites');
+                
+                // Ako si na Library stranici, osveži nakon 500ms
+                if (window.location.pathname === '/library') {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
+
+            } else {
+                // Add to favorites - POST request
+                const response = await fetch(`${URL}/library`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        jamendo_track_id: jamendoId,
+                        name: currentTrack.name,
+                        artist_name: currentTrack.artist_name,
+                        audio: currentTrack.audio,
+                        image: currentTrack.image,
+                        duration: currentTrack.duration
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    
+                    // Ako je pesma već u biblioteci (409 Conflict)
+                    if (response.status === 409) {
+                        showTemporaryNotification('Already in favorites');
+                        setIsFavorite(true);
+                        return;
+                    }
+                    
+                    throw new Error(errorData.message || 'Failed to add to favorites');
+                }
+
+                setIsFavorite(true);
+                showTemporaryNotification('Added to favorites');
+            }
+
+        } catch (error) {
+            console.error('Error managing favorites:', error);
+            showTemporaryNotification('Something went wrong');
+        }
     };
 
-    const showTemporaryNotification = (_message: string) => {
+    const showTemporaryNotification = (message: string) => {
+        setNotificationMessage(message);
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 2000);
     };
@@ -118,7 +208,7 @@ export default function FullscreenPlayerModal({ closeVisualizer, currentTrack }:
                             <Check className="w-5 h-5 text-green-400" />
                         </div>
                         <span className="text-white font-medium">
-                            {isFavorite ? 'Added to favorites' : 'Removed from favorites'}
+                            {notificationMessage}
                         </span>
                     </div>
                 </div>
