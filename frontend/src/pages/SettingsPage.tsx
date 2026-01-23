@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import URL from '../config/api/baseURL';
+import { isAuth } from '../functions/auth';
 
 interface UserData {
   name: string;
@@ -13,6 +14,11 @@ interface UserData {
 }
 
 export default function SettingsPage() {
+
+    if (!isAuth())
+        window.location.href='/'
+
+
   const [userData, setUserData] = useState<UserData>({ name: '', email: '' });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showPasswords, setShowPasswords] = useState({

@@ -4,11 +4,15 @@ import FullscreenPlayerModal from '../components/FullScreenPlayerModel';
 import Navigation from '../components/Navigation';
 import { cliendID } from '../config/api/jamendo';
 import type ITrack from '../interface/Track';
-
+import { isAuth } from '../functions/auth';
 const CLIENT_ID = cliendID;
 const BASE_URL = 'https://api.jamendo.com/v3.0';
 
 export default function DashboardPage() {
+
+    if (!isAuth())
+        window.location.href='/'
+
     const [popularTracks, setPopularTracks] = useState<ITrack[]>([]);
     const [newReleases, setNewReleases] = useState<ITrack[]>([]);
     const [loading, setLoading] = useState(true);

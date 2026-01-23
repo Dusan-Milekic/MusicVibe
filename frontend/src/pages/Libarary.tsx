@@ -4,9 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import FullscreenPlayerModal from '../components/FullScreenPlayerModel';
 import type ITrack from '../interface/Track';
+import { isAuth } from '../functions/auth';
 import URL from '../config/api/baseURL';
 
 export default function Library() {
+
+    if (!isAuth())
+        window.location.href='/'
+
     const [currentTrack, setCurrentTrack] = useState<ITrack | null>(null);
     const [favorites, setFavorites] = useState<ITrack[]>([]);
     const [activeTab, setActiveTab] = useState<'favorites' | 'playlists'>('favorites');
@@ -52,10 +57,6 @@ export default function Library() {
     const removeFromFavorites = async (jamendoTrackId: string) => {
         const token = localStorage.getItem('token');
         
-        if (!token) {
-            console.error('User not authenticated');
-            return;
-        }
 
         try {
             const response = await fetch(`${URL}/library/${jamendoTrackId}`, {

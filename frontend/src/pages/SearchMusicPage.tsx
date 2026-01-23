@@ -4,11 +4,16 @@ import Navigation from '../components/Navigation';
 import FullscreenPlayerModal from '../components/FullScreenPlayerModel';
 import { cliendID } from '../config/api/jamendo';
 import type ITrack from '../interface/Track';
+import { isAuth } from '../functions/auth';
 
 const CLIENT_ID = cliendID;
 const BASE_URL = 'https://api.jamendo.com/v3.0';
 
 export default function SearchMusicPage() {
+
+    if (!isAuth())
+        window.location.href='/'
+
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<ITrack[]>([]);
     const [loading, setLoading] = useState(false);
